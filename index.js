@@ -1,32 +1,49 @@
 "use strict";
 /**
- * UW Shibboleth Passport Authentication Module
+ * UIC Shibboleth Passport Authentication Module
  *
- * This module exposes a passport Strategy object that is pre-configured to work with the UW's Shibboleth
- * Identity Provider (IdP). To use this, you must register your server with the UW IdP. For details, see
- * https://github.com/drstearns/passport-uwshib
+ * This module exposes a passport Strategy object that is pre-configured to work with the UIC's Shibboleth
+ * Identity Provider (IdP). To use this, you must register your server with the UIC IdP. For details, see
+ * https://github.com/drstearns/passport-uicshib
  *
- * @module passport-uwshib
+ * @module passport-uicshib
  * @author Dave Stearns
+ * @author Radison Akerman
  */
 
 var saml = require('passport-saml');
 var util = require('util');
 
-var uwIdPCert = 'MIID/TCCAuWgAwIBAgIJAMoYJbDt9lKKMA0GCSqGSIb3DQEBBQUAMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdTAeFw0xMTA0MjYxOTEwMzlaFw0yMTA0MjMxOTEwMzlaMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMH9G8m68L0Hf9bmf4/7c+ERxgDQrbq50NfSi2YTQWc1veUIPYbZy1agSNuc4dwn3RtC0uOQbdNTYUAiVTcYgaYceJVB7syWf9QyGIrglZPMu98c5hWb7vqwvs6d3s2Sm7tBib2v6xQDDiZ4KJxpdAvsoPQlmGdgpFfmAsiYrnYFXLTHgbgCc/YhV8lubTakUdI3bMYWfh9dkj+DVGUmt2gLtQUzbuH8EU44vnXgrQYSXNQkmRcyoE3rj4Rhhbu/p5D3P+nuOukLYFOLRaNeiiGyTu3P7gtc/dy/UjUrf+pH75UUU7Lb369dGEfZwvVtITXsdyp0pBfun4CP808H9N0CAwEAAaOBwTCBvjAdBgNVHQ4EFgQUP5smx3ZYKODMkDglkTbduvLcGYAwgY4GA1UdIwSBhjCBg4AUP5smx3ZYKODMkDglkTbduvLcGYChYKReMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdYIJAMoYJbDt9lKKMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAEo7c2CNHEI+Fvz5DhwumU+WHXqwSOK47MxXwNJVpFQ9GPR2ZGDAq6hzLJLAVWcY4kB3ECDkRtysAWSFHm1roOU7xsU9f0C17QokoXfLNC0d7KoivPM6ctl8aRftU5moyFJkkJX3qSExXrl053uxTOQVPms4ypkYv1A/FBZWgSC8eNoYnBnv1Mhy4m8bfeEN7qT9rFoxh4cVjMH1Ykq7JWyFXLEB4ifzH4KHyplt5Ryv61eh6J1YPFa2RurVTyGpHJZeOLUIBvJu15GzcexuDDXe0kg7sHD6PbK0xzEF/QeXP/hXzMxR9kQXB/IR/b2k4ien+EM3eY/ueBcTZ95dgVM=';
-var uwIdPEntryPoint = 'https://idp.u.washington.edu/idp/profile/SAML2/Redirect/SSO';
-var strategyName = 'uwsaml';
+var uicIdPCert = 'MIIDDTCCAfWgAwIBAgIJAJmphosislTSMA0GCSqGSIb3DQEBCwUAMB0xGzAZBgNV\n' +
+    'BAMMEnNoaWJib2xldGgudWljLmVkdTAeFw0yMTA2MTkxNTU3MDFaFw0zNzA3MTUx\n' +
+    'NTU3MDFaMB0xGzAZBgNVBAMMEnNoaWJib2xldGgudWljLmVkdTCCASIwDQYJKoZI\n' +
+    'hvcNAQEBBQADggEPADCCAQoCggEBALfOyXJ43aA1cI/CmNbjrfOATCdwFqrMsx3I\n' +
+    'KSUOy7rIGMXGnlLeW4d3vNpiy/bUdEUQA0Utc/S8EM/dl/mrNinGvnNGg3v2XnPl\n' +
+    'YTpmXcHyOg0efDLsysqYuDM6hcBs8vsrwgC4CZc+qu9wOOyeXecoueQYDVGKjiTR\n' +
+    'yy4eHmP+fQVwJi3nL+aID3VmFJ3hcl85p/kgiGyrvyWdlgK+TWv5xD2/BscjHXDJ\n' +
+    'WyfZ1LPJiW1DDEE4OCl+mrg/DQmr3Km+MsvnuqFgcpWqeZdl+LkzTz4FpS7O2iaK\n' +
+    't7qgbWWeilhN3jvFJY713j/wJr5yho1xbYWp3UTbHg84orUGlgECAwEAAaNQME4w\n' +
+    'HQYDVR0OBBYEFP1f4OS9LtMlqAZIL6ZjKCztc05NMB8GA1UdIwQYMBaAFP1f4OS9\n' +
+    'LtMlqAZIL6ZjKCztc05NMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEB\n' +
+    'AGdHNshrGRnpgYQM6JbGKz91DxifQf4EcMnh/yFeHz/POLTCrs6MdChtmBN8zA5I\n' +
+    'gh323Un2qyMORfqa5qaIfHpsJOMb8LVrn/L0YvVWDKpt2immdvzdNCJS6N6NptaX\n' +
+    'FbejyzMRYwKj05GDM/N6eR84xRLuJTsy6kbEOOfn7RDSSNv0DhatYy3bLbIcs8sA\n' +
+    'mYelMWDJkpSQW1T0KKPekz9jWaoCs/CNVeg1FNiBmQpHUKoB7C5hd46RmxwK+INM\n' +
+    'HOqqcZ4k8BmZfx4Qu3mBey2mTqZIG84ACbAc3cuY9MoR7YN+hJtOkA1hKG2jGTGu\n' +
+    'Gx/8MsJK04MCRuHZNR9vpqE=\n';
+var uicIdPEntryPoint = 'https://shibboleth.uic.edu/idp/profile/SAML2/Redirect/SSO';
+var strategyName = 'uicsaml';
 
 /**
- * Standard URLs for Shibboleth Metadata route and the UW Logout page
+ * Standard URLs for Shibboleth Metadata route and the UIC Logout page
  * You can use the urls.metadata in conjunction with the metadataRoute
  * function to create your server's metadata route implementation.
  *
- * @type {{metadata: string, uwLogoutUrl: string}}
+ * @type {{metadata: string, uicLogoutUrl: string}}
  */
 module.exports.urls = {
     metadata: '/Shibboleth.sso/Metadata',
-    uwLogoutUrl: 'https://idp.u.washington.edu/idp/logout'
+    uicLogoutUrl: 'https://shibboleth.uic.edu/idp/cgi-bin/shib-logout.cgi?return=https://shibboleth.uic.edu/shibboleth-logout.html'
 };
 
 //map of possible profile attributes and what name
@@ -76,9 +93,9 @@ function convertProfileToUser(profile) {
 }
 
 /**
- * Passport Strategy for UW Shibboleth Authentication
+ * Passport Strategy for UIC Shibboleth Authentication
  *
- * This class extends passport-saml.Strategy, providing the necessary options for the UW Shibboleth IdP
+ * This class extends passport-saml.Strategy, providing the necessary options for the UIC Shibboleth IdP
  * and converting the returned profile into a user object with sensible property names.
  *
  * @param {Object} options - Configuration options
@@ -90,8 +107,8 @@ function convertProfileToUser(profile) {
  */
 module.exports.Strategy = function (options) {
     options = options || {};
-    options.entryPoint = options.entryPoint || uwIdPEntryPoint;
-    options.cert = options.cert || uwIdPCert;
+    options.entryPoint = options.entryPoint || uicIdPEntryPoint;
+    options.cert = options.cert || uicIdPCert;
     options.identifierFormat = null;
     options.issuer = options.issuer || options.entityId || options.domain;
     options.callbackUrl = 'https://' + options.domain + options.callbackUrl;
@@ -109,18 +126,18 @@ util.inherits(module.exports.Strategy, saml.Strategy);
 /*
     Route implementation for the standard Shibboleth metadata route
     usage:
-        var uwshib = require(...);
-        var strategy = new uwshib.Strategy({...});
-        app.get(uwshib.urls.metadata, uwshib.metadataRoute(strategy, myPublicCert));
+        var uicshib = require(...);
+        var strategy = new uicshib.Strategy({...});
+        app.get(uicshib.urls.metadata, uicshib.metadataRoute(strategy, myPublicCert));
 */
 
 /**
  * Returns a route implementation for the standard Shibboleth metadata route.
  * common usage:
- *  var uwshib = reuqire('passport-uwshib');
+ *  var uicshib = reuqire('passport-uicshib');
  *  var myPublicCert = //...read public cert PEM file
- *  var strategy = new uwshib.Strategy({...});
- *  app.get(uwshib.urls.metadata, uwshib.metadataRoute(strategy, myPublicCert));
+ *  var strategy = new uicshib.Strategy({...});
+ *  app.get(uicshib.urls.metadata, uicshib.metadataRoute(strategy, myPublicCert));
  *
  * @param strategy - The new Strategy object from this module
  * @param publicCert - Your server's public certificate (typically loaded from a PEM file)
@@ -152,7 +169,7 @@ module.exports.ensureAuth = function(loginUrl) {
                 req.session.authRedirectUrl = req.originalUrl;
             }
             else {
-                console.warn('passport-uwshib: No session property on request!'
+                console.warn('passport-uicshib: No session property on request!'
                     + ' Is your session store unreachable?');
 
             }
@@ -167,22 +184,22 @@ module.exports.ensureAuth = function(loginUrl) {
     capture the current URL in session state, and when your callback route
     is called, you can use this to get back to the originally-requested URL.
     usage:
-        var uwshib = require(...);
-        var strategy = new uwshib.Strategy({...});
+        var uicshib = require(...);
+        var strategy = new uicshib.Strategy({...});
         app.get('/login', passport.authenticate(strategy.name));
-        app.post('/login/callback', passport.authenticate(strategy.name), uwshib.backtoUrl());
-        app.use(uwshib.ensureAuth('/login'));
+        app.post('/login/callback', passport.authenticate(strategy.name), uicshib.backtoUrl());
+        app.use(uicshib.ensureAuth('/login'));
 */
 /**
  * Middleware for redirecting back to the originally requested URL after a successful authentication.
  * The ensureAuth() middleware in this same module will capture the current URL in session state, and
  * you can use this method to get back to the originally-requested URL during your login callback route.
  * Usage:
- *  var uwshib = require('passport-uwshib');
- *  var strategy = new uwshib.Strategy({...});
+ *  var uicshib = require('passport-uicshib');
+ *  var strategy = new uicshib.Strategy({...});
  *  app.get('/login', passport.authenticate(strategy.name));
- *  app.post('/login/callback', passport.authenticate(strategy.name), uwshib.backToUrl());
- *  app.use(uwshib.ensureAuth('/login'));
+ *  app.post('/login/callback', passport.authenticate(strategy.name), uicshib.backToUrl());
+ *  app.use(uicshib.ensureAuth('/login'));
  *  //...rest of routes
  *
  * @param defaultUrl - Optional default URL to use if no redirect URL is in session state (defaults to '/')

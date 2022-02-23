@@ -1,5 +1,5 @@
 {
-    "name": "passport-uwshib",
+    "name": "passport-uicshib",
     "version": "0.1.2",
     "license": "MIT",
     "keywords": [
@@ -7,21 +7,20 @@
         "saml",
         "shibboleth",
         "sso",
-        "UW",
-        "University of Washington"
+        "UIC",
+        "University of Illinois Chicago"
     ],
-    "description": "Passport authentication strategy for University of Washington's Shibboleth service",
-    "homepage": "https://github.com/drstearns/passport-uwshib",
+    "description": "Passport authentication strategy for University of Illinois Chicago's Shibboleth service",
+    "homepage": "https://github.com/rak3rman/passport-uicshib",
     "repository": {
         "type": "git",
-        "url": "https://github.com/drstearns/passport-uwshib"
+        "url": "https://github.com/rak3rman/passport-uicshib"
     },
     "author": {
-        "name": "Dave Stearns",
-        "email": "dlsinfo@uw.edu",
-        "url": "https://ischool.uw.edu/people/faculty/dlsinfo"
+        "name": "Radison Akerman",
+        "url": "https://github.com/rak3rman"
     },
-    "bugs": "https://github.com/drstearns/passport-uwshib/issues",
+    "bugs": "https://github.com/rak3rman/passport-uicshib/issues",
     "main": "index.js",
     "dependencies": {
         "passport-saml": ">=0.10.0"

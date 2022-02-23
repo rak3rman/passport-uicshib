@@ -1,10 +1,10 @@
 'use strict';
 
 /*
-    Example script for the passport-uwshib module
+    Example script for the passport-uicshib module
 
     This should be run on a server that will be or
-    already has been registered with the UW Shibboleth
+    already has been registered with the UIC Shibboleth
     Identity Provider (IdP).
 */
 
@@ -21,7 +21,7 @@ var bodyParser = require('body-parser');        //body parsing middleware
 var cookieParser = require('cookie-parser');    //cookie parsing middleware
 var session = require('express-session');       //express session management
 var passport = require('passport');             //authentication middleware
-var uwshib = require('passport-uwshib');        //UW Shibboleth auth strategy
+var uicshib = require('passport-uicshib');        //UIC Shibboleth auth strategy
 
 ///////////////////////////////////////////////////////////////////////////////
 // load files and read environment variables
@@ -61,9 +61,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-//create the UW Shibboleth Strategy and tell Passport to use it
-var strategy = new uwshib.Strategy({
-    //the UW spreg tool wants the full website URL as the entity ID
+//create the UIC Shibboleth Strategy and tell Passport to use it
+var strategy = new uicshib.Strategy({
+    //the UIC spreg tool wants the full website URL as the entity ID
     //so add the `https://` protocol to your domain name
     entityId: 'https://' + domain,
     privateKey: privateKey,
@@ -98,17 +98,17 @@ passport.deserializeUser(function(user, done){
 ///////////////////////////////////////////////////////////////////////////////
 // login, login callback, and metadata routes
 //
-app.get(loginUrl, passport.authenticate(strategy.name), uwshib.backToUrl());
-app.post(loginCallbackUrl, passport.authenticate(strategy.name), uwshib.backToUrl());
-app.get(uwshib.urls.metadata, uwshib.metadataRoute(strategy, publicCert));
+app.get(loginUrl, passport.authenticate(strategy.name), uicshib.backToUrl());
+app.post(loginCallbackUrl, passport.authenticate(strategy.name), uicshib.backToUrl());
+app.get(uicshib.urls.metadata, uicshib.metadataRoute(strategy, publicCert));
 
 //secure all routes following this
 //alternatively, you can use ensureAuth as middleware on specific routes
 //example:
-//  app.get('protected/resource', uwshib.ensureAuth(loginUrl), function(req, res) {
+//  app.get('protected/resource', uicshib.ensureAuth(loginUrl), function(req, res) {
 //      //route code
 //  });
-app.use(uwshib.ensureAuth(loginUrl));
+app.use(uicshib.ensureAuth(loginUrl));
 
 
 ///////////////////////////////////////////////////////////////////////////////
