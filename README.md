@@ -1,7 +1,9 @@
 Passport-UICShib
 ===============
 
-Passport authentication strategy that works with the University of Washington's Shibboleth single-sign on service. This uses the fabulous [passport-saml](https://github.com/bergie/passport-saml) module for all the heavy lifting, but sets all the default options so that it works properly with the UIC Shibboleth Identity Provider (IdP).
+Forked from [passport-uwshib](https://github.com/drstearns/passport-uwshib) by Dave Stearns
+
+Passport authentication strategy that works with the University of Illinois Chicago's Shibboleth single-sign on service. This uses the fabulous [passport-saml](https://github.com/bergie/passport-saml) module for all the heavy lifting, but sets all the default options so that it works properly with the UIC Shibboleth Identity Provider (IdP).
 
 Note that in order to use the UIC IdP for authentication, **you must [register your server](https://iam-tools.u.washington.edu/spreg/)**. During the registration process, it will attempt to gather your server's metadata via the route `/Shibboleth.sso/Metadata`. This module provides an implementation for that route, but you have to set that up in your main server script (see [/example/server.js](https://github.com/drstearns/passport-uicshib/blob/master/example/server.js)).
 

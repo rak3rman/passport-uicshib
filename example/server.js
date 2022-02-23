@@ -21,7 +21,7 @@ var bodyParser = require('body-parser');        //body parsing middleware
 var cookieParser = require('cookie-parser');    //cookie parsing middleware
 var session = require('express-session');       //express session management
 var passport = require('passport');             //authentication middleware
-var uicshib = require('passport-uicshib');        //UIC Shibboleth auth strategy
+var uicshib = require('passport-uicshib');      //UIC Shibboleth auth strategy
 
 ///////////////////////////////////////////////////////////////////////////////
 // load files and read environment variables
