@@ -41,8 +41,8 @@ var httpsPort = process.env.HTTPSPORT || 443;
 //used for HTTPS and for signing SAML requests
 //put these in a /security subdirectory with the following names,
 //or edit the paths used in the following lines
-var publicCert = fs.readFileSync('./security/server-cert.pem', 'utf-8');
-var privateKey = fs.readFileSync('./security/server-pvk.pem', 'utf-8');
+var publicCert = fs.readFileSync('/etc/pki/tls/certs/*.engr.uic.edu.crt', 'utf-8');
+var privateKey = fs.readFileSync('/etc/pki/tls/private/*.engr.uic.edu.key', 'utf-8');
 
 ///////////////////////////////////////////////////////////////////////////////
 // setup express application and register middleware
