@@ -116,7 +116,7 @@ module.exports.Strategy = function (options) {
     options.privateCert = options.privateKey;
 
 
-    saml.Strategy.call(this, options, verifyProfile);
+    new saml.Strategy.call(this, options, verifyProfile);
     this.name = strategyName;
 };
 
