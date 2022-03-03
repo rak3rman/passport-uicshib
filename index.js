@@ -115,11 +115,12 @@ module.exports.Strategy = function (options) {
     options.decryptionPvk = options.privateKey;
     options.privateCert = options.privateKey;
 
-
-    new saml.Strategy.call(this, options, verifyProfile);
+    let strat = new saml.Strategy(options, verifyProfile);
+    this._verify = verifyProfile;
+    this._saml = strat._saml;
+    this._passReqToCallback = strat._passReqToCallback;
     this.name = strategyName;
 };
-
 
 util.inherits(module.exports.Strategy, saml.Strategy);
 
