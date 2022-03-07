@@ -147,7 +147,7 @@ util.inherits(module.exports.Strategy, saml.Strategy);
 module.exports.metadataRoute = function(strategy, publicCert) {
     return function(req, res) {
         res.type('application/xml');
-        res.status(200).send(strategy.generateServiceProviderMetadata(null, publicCert));
+        res.status(200).send(strategy.generateServiceProviderMetadata(publicCert, publicCert));
     };
 }; //metadataRoute
 
