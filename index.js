@@ -30,7 +30,7 @@ var uicIdPCert = 'MIIDDTCCAfWgAwIBAgIJAJmphosislTSMA0GCSqGSIb3DQEBCwUAMB0xGzAZBg
     'FbejyzMRYwKj05GDM/N6eR84xRLuJTsy6kbEOOfn7RDSSNv0DhatYy3bLbIcs8sA\n' +
     'mYelMWDJkpSQW1T0KKPekz9jWaoCs/CNVeg1FNiBmQpHUKoB7C5hd46RmxwK+INM\n' +
     'HOqqcZ4k8BmZfx4Qu3mBey2mTqZIG84ACbAc3cuY9MoR7YN+hJtOkA1hKG2jGTGu\n' +
-    'Gx/8MsJK04MCRuHZNR9vpqE=\n';
+    'Gx/8MsJK04MCRuHZNR9vpqE=';
 var uicIdPEntryPoint = 'https://shibboleth.uic.edu/idp/profile/SAML2/Redirect/SSO';
 var strategyName = 'uicsaml';
 
@@ -42,7 +42,7 @@ var strategyName = 'uicsaml';
  * @type {{metadata: string, uicLogoutUrl: string}}
  */
 module.exports.urls = {
-    metadata: '/Shibboleth.sso/Metadata',
+    metadata: '/shibboleth.sso/metadata',
     uicLogoutUrl: 'https://shibboleth.uic.edu/idp/cgi-bin/shib-logout.cgi?return=https://shibboleth.uic.edu/shibboleth-logout.html'
 };
 
@@ -50,21 +50,20 @@ module.exports.urls = {
 //we should give them on the resulting user object
 //add to this with other attrs if you request them
 var profileAttrs = {
-    'urn:oid:0.9.2342.19200300.100.1.1': 'netId',
     'urn:oid:2.16.840.1.113730.3.1.241': 'displayName',
-    'urn:oid:1.3.6.1.4.1.5923.1.1.1.1': 'affiliation',
-    'urn:oid:2.5.4.3': 'cn',
-    'urn:oid:0.9.2342.19200300.100.1.3': 'email',
-    'urn:oid:2.16.840.1.113730.3.1.3': 'empNum',
-    'urn:oid:1.3.6.1.4.1.5923.1.1.1.6': 'principalName',
+    'urn:oid:1.3.6.1.4.1.5923.1.1.1.5': 'eduPersonPrimaryAffiliation',
+    'urn:oid:1.3.6.1.4.1.5923.1.1.1.6': 'eduPersonPrincipalName',
+    'urn:oid:1.3.6.1.4.1.5923.1.1.1.9': 'eduPersonScopedAffiliation',
     'urn:oid:2.5.4.42': 'givenName',
-    'urn:oid:2.5.4.18': 'box',
-    'urn:oid:2.5.4.20': 'phone',
-    'urn:oid:2.5.4.4': 'surname',
+    'urn:oid:1.3.6.1.4.1.11483.101.3': 'iTrustSuppress',
+    'urn:oid:0.9.2342.19200300.100.1.3': 'mail',
+    'urn:oid:2.5.4.10': 'organizationName',
+    'urn:oid:2.5.4.4': 'sn',
+    'urn:oid:1.3.6.1.4.1.11483.101.5': 'iTrustHomeDeptCode',
+    'urn:oid:1.3.6.1.4.1.11483.101.4': 'iTrustUIN',
+    'urn:oid:2.5.4.11': 'organizationalUnit',
     'urn:oid:2.5.4.12': 'title',
-    'urn:oid:1.2.840.113994.200.21': 'studentId',
-    'urn:oid:1.2.840.113994.200.24': 'regId',
-    'urn:oid:1.3.6.1.4.1.5923.1.5.1.1': 'gwsGroups'
+    'urn:oid:0.9.2342.19200300.100.1.1': 'uid'
 };
 
 function verifyProfile(profile, done) {
