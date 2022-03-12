@@ -5,7 +5,7 @@ module.exports = {
             script: "./server.js",
             watch: true,
             env: {
-                "DOMAIN": "enga-vm7.engr.uic.edu/shibboleth",
+                "DOMAIN": "test.uic.edu",
                 "HTTPPORT": 3010,
                 "HTTPSPORT": 3011
             }
