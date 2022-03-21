@@ -6,6 +6,8 @@ module.exports = {
             watch: true,
             env: {
                 "DOMAIN": "test.uic.edu",
+                "SHIBALIKE": false,
+                "SECRET": "CHANGE_ME_TO_A_RANDOM_STRING",
                 "HTTPPORT": 3010,
                 "HTTPSPORT": 3011
             }

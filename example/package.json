@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "dependencies": {
         "passport-uicshib": "*",
+        "passport-local": "*",
         "body-parser": "*",
         "chalk": "*",
         "cookie-parser": "*",
