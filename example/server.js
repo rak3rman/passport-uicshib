@@ -11,6 +11,8 @@
 const preAuthUrl = ''; // appended to beginning of authentication routes, optional, ex: '/shibboleth'
 const loginUrl = '/api/login'; // where we will redirect if the user is not logged in
 const loginCallbackUrl = '/api/login/callback'; // where shibboleth should redirect upon successful auth
+const logoutUrl = '/api/logout'; // url endpoint that will log a user out
+const userUrl = '/api/user'; // url endpoint that will return user details
 
 let http = require('http');                     // http server
 let https = require('https');                   // https server
@@ -38,6 +40,8 @@ if (!domain || domain.length == 0)
 let shibalike = process.env.SHIBALIKE || false;
 let httpPort = process.env.HTTPPORT || 80;
 let httpsPort = process.env.HTTPSPORT || 443;
+
+let shibaUsers = require('./shibalike-users.json');
 
 // load public certificate and private key
 // used for HTTPS and for signing SAML requests
@@ -89,25 +93,8 @@ let shibalikeStrategy = new passLocal(
     function(username, password, done) {
         // Checks user/pass for one hardcoded user and returns user
         // NEVER hard code values like this, it is awful practice
-        if (username === "user" && password === "pass") {
-            return done(null, {
-                "iTrustSuppress": "false",
-                "iTrustUIN": "123456789",
-                "eduPersonPrincipalName": "jdoe@uic.edu",
-                "iTrustHomeDeptCode": "2-FQ-699",
-                "eduPersonScopedAffiliation": [
-                    "student@uic.edu",
-                    "member@uic.edu"
-                ],
-                "displayName": "John Shibalike Doe",
-                "organizationName": "University of Illinois at Chicago",
-                "eduPersonPrimaryAffiliation": "student",
-                "sn": "Doe",
-                "organizationalUnit": "Computer Science",
-                "mail": "jdoe@uic.edu",
-                "givenName": "John",
-                "uid": "jdoe"
-            });
+        if (username === "jdoe" && password === "pass") {
+            return done(null, shibaUsers[0]);
         } else {
             return done(null, false);
         }
@@ -141,37 +128,41 @@ passport.deserializeUser(function(user, done){
 //
 if (shibalike) {
     // Shibalike authentication routes
-    app.get(loginUrl, function(req, res) {
-        res.send('<p>Welcome to the login page</p>');
-    })
     app.post(loginUrl, passport.authenticate(shibalikeStrategy.name, { failureRedirect: '/login' }), uicshib.backToUrl());
-    // Secure all routes using this middleware
+    // Secure all application routes using this middleware
     app.use(uicshib.ensureAuth(loginUrl));
 } else {
     // UIC Shibboleth authentication routes
     app.get(loginUrl, passport.authenticate(uicshibStrategy.name), uicshib.backToUrl());
     app.post(preAuthUrl + loginCallbackUrl, passport.authenticate(uicshibStrategy.name), uicshib.backToUrl());
     app.get(uicshib.urls.metadata, uicshib.metadataRoute(uicshibStrategy, publicCert));
-    // Secure all routes using this middleware
+    // Secure all application routes using this middleware
     app.use(uicshib.ensureAuth(loginUrl));
 }
+
+// Universal logout route
+app.get(logoutUrl, function(req, res) {
+    req.logout();
+    console.log("Logged out");
+    return res.send;
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // application routes
 //
 
-// root resource
-// just say hello!
-// eventually this will be a static middleware that returns our UI pages
-app.get('/', 
-    function(req, res) {
-        // req.user will contain the user object sent on by the
-        // passport.deserializeUser() function above
-        res.send('<p>Hello ' + req.user.displayName + '!</p>' +
-            '<p>Shibboleth\'s IdP Attributes:</p>' +
-            '<code style="white-space: pre">' + JSON.stringify(req.user, null, 4) + '</code>');
-    }
-);
+// // root resource
+// // just say hello!
+// // eventually this will be a static middleware that returns our UI pages
+// app.get('/',
+//     function(req, res) {
+//         // req.user will contain the user object sent on by the
+//         // passport.deserializeUser() function above
+//         res.send('<p>Hello ' + req.user.displayName + '!</p>' +
+//             '<p>Shibboleth\'s IdP Attributes:</p>' +
+//             '<code style="white-space: pre">' + JSON.stringify(req.user, null, 4) + '</code>');
+//     }
+// );
 
 // general error handler
 // if any route throws, this will be called

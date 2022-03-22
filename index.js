@@ -183,16 +183,13 @@ module.exports.metadataRoute = function(strategy, publicCert) {
  */
 module.exports.ensureAuth = function(loginUrl) {
     return function(req, res, next) {
-        if (req.isAuthenticated())
+        if (req.isAuthenticated()) {
             return next();
-        else {
+        } else {
             if (req.session) {
                 req.session.authRedirectUrl = req.originalUrl;
-            }
-            else {
-                console.warn('passport-uicshib: No session property on request!'
-                    + ' Is your session store unreachable?');
-
+            } else {
+                console.warn('passport-uicshib: No session property on request! Is your session store unreachable?');
             }
             res.redirect(loginUrl);
         }

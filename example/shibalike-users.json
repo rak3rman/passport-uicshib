@@ -1,0 +1,38 @@
+[
+  {
+    "iTrustSuppress": "false",
+    "iTrustUIN": "123456789",
+    "eduPersonPrincipalName": "jdoe@uic.edu",
+    "iTrustHomeDeptCode": "2-FQ-699",
+    "eduPersonScopedAffiliation": [
+      "student@uic.edu",
+      "member@uic.edu"
+    ],
+    "displayName": "John Shibalike Doe",
+    "organizationName": "University of Illinois at Chicago",
+    "eduPersonPrimaryAffiliation": "student",
+    "sn": "Doe",
+    "organizationalUnit": "Computer Science",
+    "mail": "jdoe@uic.edu",
+    "givenName": "John",
+    "uid": "jdoe"
+  },
+  {
+    "iTrustSuppress": "false",
+    "iTrustUIN": "123456789",
+    "eduPersonPrincipalName": "jdoe@uic.edu",
+    "iTrustHomeDeptCode": "2-FQ-699",
+    "eduPersonScopedAffiliation": [
+      "student@uic.edu",
+      "member@uic.edu"
+    ],
+    "displayName": "John Shibalike Doe",
+    "organizationName": "University of Illinois at Chicago",
+    "eduPersonPrimaryAffiliation": "student",
+    "sn": "Doe",
+    "organizationalUnit": "Computer Science",
+    "mail": "jdoe@uic.edu",
+    "givenName": "John",
+    "uid": "jdoe"
+  }
+]
