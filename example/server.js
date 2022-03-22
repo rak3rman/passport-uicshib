@@ -9,8 +9,8 @@
 */
 
 const preAuthUrl = ''; // appended to beginning of authentication routes, optional, ex: '/shibboleth'
-const loginUrl = '/login'; // where we will redirect if the user is not logged in
-const loginCallbackUrl = '/login/callback'; // where shibboleth should redirect upon successful auth
+const loginUrl = '/api/login'; // where we will redirect if the user is not logged in
+const loginCallbackUrl = '/api/login/callback'; // where shibboleth should redirect upon successful auth
 
 let http = require('http');                     // http server
 let https = require('https');                   // https server

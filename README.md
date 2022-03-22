@@ -1,6 +1,8 @@
 Passport-UICShib
 ===============
 
+> Project is in active development where the master branch may be unstable. Head over to Releases in Github or use npm to snag a stable copy of passport-uicshib. Thanks!
+
 Forked from [passport-uwshib](https://github.com/drstearns/passport-uwshib) by Dave Stearns
 
 Passport authentication strategy that works with the University of Illinois Chicago's Shibboleth single-sign on service. This uses the fabulous [passport-saml](https://github.com/bergie/passport-saml) module for all the heavy lifting, but sets all the default options so that it works properly with the UIC Shibboleth Identity Provider (IdP).
