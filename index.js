@@ -181,17 +181,12 @@ module.exports.metadataRoute = function(strategy, publicCert) {
  * @param loginUrl - The URL to redirect to if the user is not authenticated
  * @returns {Function} - Middleware function that ensures authentication
  */
-module.exports.ensureAuth = function(loginUrl) {
+module.exports.ensureAuth = function() {
     return function(req, res, next) {
         if (req.isAuthenticated()) {
             return next();
         } else {
-            if (req.session) {
-                req.session.authRedirectUrl = req.originalUrl;
-            } else {
-                console.warn('passport-uicshib: No session property on request! Is your session store unreachable?');
-            }
-            res.redirect(loginUrl);
+            res.status(401).send('You are not authenticated');
         }
     };
 };

@@ -41,6 +41,7 @@ let shibalike = process.env.SHIBALIKE || false;
 let httpPort = process.env.HTTPPORT || 80;
 let httpsPort = process.env.HTTPSPORT || 443;
 
+let publicRoot = './vue/dist'; // absolute path to vue compiled dist
 let shibaUsers = require('./shibalike-users.json');
 
 // load public certificate and private key
@@ -67,6 +68,7 @@ app.use(session({
     secret: process.env.SECRET,
     cookie: {secret: true}
 }));
+app.use(express.static(publicRoot))
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -103,7 +105,7 @@ let shibalikeStrategy = new passLocal(
         if (target) {
             done(null, target)
         } else {
-            done(null, false, { message: "Incorrect username or password" })
+            done(null, false, { message: "Incorrect username or password, please try again" })
         }
     }
 );
@@ -144,10 +146,8 @@ if (shibalike) {
             });
         })(req, res, next);
     });
-    // Secure all application routes using this middleware
-    app.use(uicshib.ensureAuth(loginUrl));
     // Provide user details route
-    app.get(userUrl, (req, res) => {
+    app.get(userUrl, uicshib.ensureAuth(), (req, res) => {
         res.send({ user: req.user });
     })
 } else {
@@ -155,33 +155,23 @@ if (shibalike) {
     app.get(loginUrl, passport.authenticate(uicshibStrategy.name), uicshib.backToUrl());
     app.post(preAuthUrl + loginCallbackUrl, passport.authenticate(uicshibStrategy.name), uicshib.backToUrl());
     app.get(uicshib.urls.metadata, uicshib.metadataRoute(uicshibStrategy, publicCert));
-    // Secure all application routes using this middleware
-    app.use(uicshib.ensureAuth(loginUrl));
 }
 
 // Universal logout route
 app.get(logoutUrl, (req, res) => {
     req.logout();
     console.log("Logged out");
-    return res.send;
+    return res.redirect("/login");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
 // application routes
 //
 
-// // root resource
-// // just say hello!
-// // eventually this will be a static middleware that returns our UI pages
-// app.get('/',
-//     function(req, res) {
-//         // req.user will contain the user object sent on by the
-//         // passport.deserializeUser() function above
-//         res.send('<p>Hello ' + req.user.displayName + '!</p>' +
-//             '<p>Shibboleth\'s IdP Attributes:</p>' +
-//             '<code style="white-space: pre">' + JSON.stringify(req.user, null, 4) + '</code>');
-//     }
-// );
+// root resource
+app.get("/login", (req, res, next) => {
+    res.sendFile("index.html", { root: publicRoot });
+})
 
 // general error handler
 // if any route throws, this will be called

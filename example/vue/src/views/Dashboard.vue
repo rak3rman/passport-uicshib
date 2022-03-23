@@ -182,7 +182,7 @@ const subNavigation = [
 ]
 const userNavigation = [
   { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '/logout' },
+  { name: 'Sign out', href: '/api/logout' },
 ]
 
 export default {
