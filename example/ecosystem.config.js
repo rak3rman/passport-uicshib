@@ -2,8 +2,9 @@ module.exports = {
     apps : [
         {
             name: "passport-uicshib",
-            script: "./server.js",
+            script: "server.js",
             watch: true,
+            ignore_watch : ["node_modules", "vue"],
             env: {
                 "DOMAIN": "test.uic.edu",
                 "SHIBALIKE": false,

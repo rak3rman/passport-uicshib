@@ -20,19 +20,19 @@
   {
     "iTrustSuppress": "false",
     "iTrustUIN": "123456789",
-    "eduPersonPrincipalName": "jdoe@uic.edu",
+    "eduPersonPrincipalName": "mjane@uic.edu",
     "iTrustHomeDeptCode": "2-FQ-699",
     "eduPersonScopedAffiliation": [
       "student@uic.edu",
       "member@uic.edu"
     ],
-    "displayName": "John Shibalike Doe",
+    "displayName": "Mary Shibalike Jane",
     "organizationName": "University of Illinois at Chicago",
     "eduPersonPrimaryAffiliation": "student",
-    "sn": "Doe",
+    "sn": "Jane",
     "organizationalUnit": "Computer Science",
-    "mail": "jdoe@uic.edu",
-    "givenName": "John",
-    "uid": "jdoe"
+    "mail": "mjane@uic.edu",
+    "givenName": "Mary",
+    "uid": "mjane"
   }
 ]

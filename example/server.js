@@ -90,13 +90,20 @@ let uicshibStrategy = new uicshib.Strategy({
 
 // Declare Passport Local Strategy
 let shibalikeStrategy = new passLocal(
-    function(username, password, done) {
+    {
+        usernameField: "email",
+        passwordField: "password"
+    },
+    (username, password, done) => {
         // Checks user/pass for one hardcoded user and returns user
         // NEVER hard code values like this, it is awful practice
-        if (username === "jdoe" && password === "pass") {
-            return done(null, shibaUsers[0]);
+        let target = shibaUsers.find((user) => {
+            return user.uid === username && "pass" === password;
+        })
+        if (target) {
+            done(null, target)
         } else {
-            return done(null, false);
+            done(null, false, { message: "Incorrect username or password" })
         }
     }
 );
@@ -128,9 +135,21 @@ passport.deserializeUser(function(user, done){
 //
 if (shibalike) {
     // Shibalike authentication routes
-    app.post(loginUrl, passport.authenticate(shibalikeStrategy.name, { failureRedirect: '/login' }), uicshib.backToUrl());
+    app.post(loginUrl, (req, res, next) => {
+        passport.authenticate("local", (err, user, info) => {
+            if (err) return next(err);
+            if (!user) return res.status(400).send([user, "Cannot log in", info]);
+            req.login(user, err => {
+                res.send("Logged in");
+            });
+        })(req, res, next);
+    });
     // Secure all application routes using this middleware
     app.use(uicshib.ensureAuth(loginUrl));
+    // Provide user details route
+    app.get(userUrl, (req, res) => {
+        res.send({ user: req.user });
+    })
 } else {
     // UIC Shibboleth authentication routes
     app.get(loginUrl, passport.authenticate(uicshibStrategy.name), uicshib.backToUrl());
@@ -141,7 +160,7 @@ if (shibalike) {
 }
 
 // Universal logout route
-app.get(logoutUrl, function(req, res) {
+app.get(logoutUrl, (req, res) => {
     req.logout();
     console.log("Logged out");
     return res.send;
