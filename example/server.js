@@ -141,9 +141,9 @@ passport.deserializeUser(function(user, done){
 //
 if (shibalike) {
     // Shibalike authentication routes
-    app.get(loginUrl, (req, res, next) => {
-        res.sendFile("index.html", { root: publicRoot });
-    })
+    // app.get(loginUrl, (req, res, next) => {
+    //     res.sendFile("index.html", { root: publicRoot });
+    // })
     app.post(loginUrl, (req, res, next) => {
         passport.authenticate("local", (err, user, info) => {
             if (err) return next(err);
@@ -172,7 +172,7 @@ app.get(logoutUrl, (req, res) => {
 //
 
 // Dashboard route
-app.get("/", uicshib.ensureAuth(), (req, res, next) => {
+app.get("/login", (req, res, next) => {
     res.sendFile("index.html", { root: publicRoot });
 })
 
