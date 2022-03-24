@@ -9,34 +9,24 @@ Passport authentication strategy that works with the University of Illinois Chic
 
 Note that in order to use the UIC IdP for authentication, **you must [register your server](https://itrust.illinois.edu/federationregistry) with the UI I-Trust Federation Registry as a Service Provider**. During the registration process, under Advanced SAML 2 Registration, this package only requires the `Assertion Consuming Service (Post)` attribute to be defined as `https://test.uic.edu/login/callback`, with respect to your subdomain.
 
-While registering, you must also specify which user profile attributes you want. See the [https://shibtest.uic.edu/test](https://shibtest.uic.edu/test/) for all available profile attributes (you must be logged in).
+While registering, you must also specify which user profile attributes you want. See [https://shibtest.uic.edu/test](https://shibtest.uic.edu/test/) for all available profile attributes (you must be logged in). All possible attributes are included with the library, so whatever attributes are passed from Identity Provider will be accessible through the req.user object.
 
-Installation
-------------
+## Installation
+
     npm install passport-uicshib
 
-Usage
------
-There is a fully-working example server script in [/example/server.js](https://github.com/rak3rman/passport-uicshib/blob/master/example/server.js), and an associated [package.json](ttps://github.com/rak3rman/passport-uicshib/blob/master/example/package.json), which you can use to install all the necessary packages to make the example script run (express, express middleware, passport, etc.). Refer to that as I explain what it is doing.
+## Usage
 
-This module provides a Strategy for the [Passport](http://passportjs.org/) framework, which is typically used with [Express](http://expressjs.com/). Thus, there are several modules you need to require in your server script in addition to this module.
+There is a fully-working example server script in [/example/server.js](https://github.com/rak3rman/passport-uicshib/blob/master/example/server.js), and an associated [package.json](ttps://github.com/rak3rman/passport-uicshib/blob/master/example/package.json), which you can use to install all the necessary packages to make the example script run (express, express middleware, passport, etc.).
+If you are starting a new project and like how the `/example` folder is organized, feel free to copy that directory and plop it into your repository.
 
-    let http = require('http');                     // http server
-    let https = require('https');                   // https server
-    let fs = require('fs');                         // file system
-    let express = require("express");               // express middleware
-    let morgan = require('morgan');                 // logger for express
-    let bodyParser = require('body-parser');        // body parsing middleware
-    let cookieParser = require('cookie-parser');    // cookie parsing middleware
-    let session = require('express-session');       // express session management
-    let passport = require('passport');             // authentication middleware
-    let uicshib = require('passport-uicshib');      // UIC Shibboleth auth strategy
+This module provides a Strategy for the [Passport](http://passportjs.org/) framework, which is typically used with [Express](http://expressjs.com/). Thus, there are several modules you need to require in your server script in addition to this module. All of these recommended modules are included with the example script.
 
 ### Command line
 
-The example script then gets the server's domain name from an environment variable. This allows you to run the example script without modification. Simply export a value for `DOMAIN` and run the script. You can also override the default HTTP and HTTPS ports if you wish by specifying `HTTPPORT` and `HTTPSPORT` environment variables.
+The example script then gets the server's domain name and application secret from an environment variable. This allows you to run the example script without modification. Simply export a value for `DOMAIN` and `SECRET` and run the script. You can also override the default SHIBALIKE, HTTP, and HTTPS configurations if you wish by specifying `SHIBALIKE`, `HTTPPORT` and/or `HTTPSPORT` environment variables.
 
-    export DOMAIN=mydomain.uic.edu
+    export DOMAIN=test.uic.edu SECRET=CHANGE_TO_RANDOM_STRING
     node server.js
 
 ### PM2
@@ -45,75 +35,98 @@ The example script is also ready to go with **pm2**. Modify the values defined i
 
     {
         name: "passport-uicshib",
-        script: "./server.js",
+        script: "server.js",
         watch: true,
+        ignore_watch : ["node_modules", "vue"],
         env: {
-            "DOMAIN": "test.uic.edu",
-            "HTTPPORT": 3010,
-            "HTTPSPORT": 3011
-        }    
-    } 
+            "DOMAIN": "test.uic.edu",            // domain that we are serving the application from
+            "SHIBALIKE": false,                  // use shibalike? uses passport-local instead of Shibboleth
+            "SECRET": "CHANGE_TO_RANDOM_STRING", // application secret, should be updated with a random string
+            "HTTPPORT": 3010,                    // http port we are listening on
+            "HTTPSPORT": 3011                    // https port we are listening on
+        }
+    }
 
 Once the env variables are set to your liking, start the pm2 process using:
 
     pm2 start ecosystem.config.js --env env
 
-### Configuration Breakdown
+If you change the configuration in `/example/ecosystem.config.js`, you must delete the process using `pm2 delete passport-uicshib` and start it again using the command above.
 
-The example script then loads a public certificate and associated private key from two files in a `/security` subdirectory.
+### Routes
 
-    let publicCert = fs.readFileSync('../../security/sp-cert.pem', 'utf-8');
-    let privateKey = fs.readFileSync('../../security/sp-key.pem', 'utf-8');
+The following routes are provided by default in `example/server.js`. 
+Adjust these as needed to conform with your UI I-Trust Service Provider configuration.
+Routes are used on the backend only with both Shibalike and the Shibboleth SSO.
 
-These are used not only for the HTTPS server, but also to sign requests sent to the UIC IdP. You can use [openssl](http://www.sslshopper.com/article-most-common-openssl-commands.html) to generate keys and certificate signing requests. The UIC IdP seems to require that your server responds to HTTPS requests, so you should get a signed certificate for your server before trying to register it.
+    const preAuthUrl = ''; // appended to beginning of authentication routes, optional, ex: '/shibboleth'
+    const loginUrl = '/api/login'; // where we will redirect if the user is not logged in
+    const loginCallbackUrl = '/api/login/callback'; // where shibboleth should redirect upon successful auth
+    const logoutUrl = '/api/logout'; // url endpoint that will log a user out
+    const userUrl = '/api/user'; // url endpoint that will return user details
 
-The script continues by creating a typical Express application and registering the typical middleware. For more information on this, see the [Passport.js site](http://passportjs.org/).
+## Shibalike (development)
 
-Then the script creates the UIC Shibboleth Strategy, and tells Passport to use it.
+Trying to authenticate through the Shibboleth SSO on your local machine is extremely difficult and impractical.
+Shibalike imitates the Shibboleth SSO using passport-local and dummy metadata passed along into the user object.
+You can choose to enable Shibalike in the env configuration, and the example script will flip all settings to act like Shibboleth.
+Once the dummy user is authenticated, the application should act exactly as if the user was authenticated through Shibboleth.
 
-    //create the UIC Shibboleth Strategy and tell Passport to use it
-    var strategy = new uicshib.Strategy({
-        entityId: domain,
-        privateKey: privateKey,
-        callbackUrl: loginCallbackUrl,
-        domain: domain
-    });
+**A couple important notes in `example/server.js`**
 
-    passport.use(strategy);
+- Activated if the env variable in command line or pm2 is `SHIBALIKE=true`
+- Uses passport-local with a modified object of user attributes
+- Dummy users are stored in `shibalike-users.json` with all associated attributes
+  - Users can log in on `/login` with their NetID (user.uid) and the static password "pass" (ex. NetID: "jdoe", Password: "pass")
+  - Users are then redirected to `/` with a fancy print out of all attributes
+- Only listens for **http** requests on the defined port, not **https**
 
-In addition to the properties shown above, you may also pass any [configuration properties accepted by the passport-saml library](https://github.com/bergie/passport-saml/blob/master/README.md#configure-strategy).
+## Shibboleth SSO (production)
 
-**Note:** When the UIC IdP sends back Shibboleth assertions, they contain timestamps that declare when and for how long those assertions are valid. The passport-saml library will compare these timestamps against your server's clock, and will not allow any time skewing by default. If your server's clock is not synchronized with the UIC IdP server, you may want to add the `acceptedClockSkewMs` property to the object you pass to the `uicshib.Strategy()` constructor. This property is defined and interpreted by the passport-saml library, and may be set to a number of milliseconds that the clocks are allowed to be off from one another. If you don't want any timestamp checking at all, you may set this property to `-1`. See the [passport-saml configuration properties](https://github.com/bergie/passport-saml/blob/master/README.md#configure-strategy) for more details.
+If Shibalike is disabled, the full functionality of passport-uicshib will be enabled. 
+If a user tries to access a secured route, they will be redirected to `/login` then to Shibboleth's login page using SAML.
+Once the user is authenticated on Shibboleth's end, they will be redirected to `/login/callback` along with the user metadata.
+Now the user is authenticated as far as the application is aware. This method will only work on production servers that are registered with the UI I-Trust Federation Registry as a Service Provider.
 
-The name of the strategy is `'uicsaml'`, but you can use the `.name` property of the Strategy to refer to that.
+**A couple important notes in `example/server.js`**
 
-You will typically want to use sessions to allow users to authenticate only once per-sesion. The next functions are called by Passport to serialize and deserialize the user to the session. As noted in the comments, you would typically want to serialize only the unique ID (`.netID`) and reconstitute the user from your database during deserialzie. But to keep things simple, the script serializes the entire user and deserializes it again.
+- Activated if the env variable in command line or pm2 is `SHIBALIKE=false` (is default)
+- Leverages passport-saml and passport-uicshib
+- User data is retrieved from the Shibboleth SSO on callback 
+    - Unauthenticated users are redirected to `/login` then to Shibboleth, returns to the application on the callback route
+    - Users are then redirected to `/` with a fancy print out of all attributes
+- Listens for requests on **https**, all **http** requests are redirected to **https**
+  - A public certificate `publicCert` and private key `privateKey` are required to secure traffic
+    - Certs/keys should match those defined in the Shibboleth Identity Provider configuration
+    - Expected to be in a security folder at `../../security` from the location of `server.js` by default in pem format
 
-    passport.serializeUser(function(user, done){
-        done(null, user);
-    });
+## Vue.js frontend
 
-    passport.deserializeUser(function(user, done){
-        done(null, user);
-    });
+A sample Vue.js project is provided to help users authenticate with Shibalike.
+This frontend was based on the [Vite + Vue 3 + Tailwinds CSS Starter Template](https://github.com/web2033/vite-vue3-tailwind-starter).
+In the `example` folder, the Vite project is ready-to-go in both a development sense using `npm run dev` and compiled for production using `npm run build`.
 
-Next, the script registers a few routes to handle login, the login callback, and the standard metadata. This module provides implementations for the metadata route, and you use passport.authenticate for the login and login callback routes. The login route will redirect the user to the UIC single sign-on page, and the UIC IdP will then redirect the user back to the login callback route.
+### Development
 
-    app.get(loginUrl, passport.authenticate(strategy.name), uicshib.backToUrl());
-    app.post(preAuthUrl + loginCallbackUrl, passport.authenticate(strategy.name), uicshib.backToUrl());
-    app.get(uicshib.urls.metadata, uicshib.metadataRoute(strategy, publicCert));
+Start the **Node.js backend** and watch for changes on default port **3010**
 
-The `uicshib.backToUrl()` is a convenience middleware that will redirect the browser back to the URL that was originally requested before authentication.
+    cd example    
+    pm2 start ecosystem.config.js --env env
 
-Lastly, the script tells Express to use the `ensureAuth()` middleware provided by this module to secure all routes declared after this.
+Start the **Vue.js frontend** and watch for changes on default port **3000**
 
-    app.use(uicshib.ensureAuth(loginUrl));
+    cd vue
+    npm run dev
 
-Any route requested after this middleware will require authentication. When requested, those routes will automatically redirect to the `loginUrl` if the user has not already authenticated. After successful authentication, the browser will be redirected back to the original URL, and the user information will be available via the `req.user` object.
+### Production
 
-Note that `ensureAuth` can also be used to selectively secure routes. For example:
+Build the **Vue.js frontend** into the `example/vue/dist` folder
 
-    app.get('protected/resource', ensureAuth(loginUrl), function(req, res) {
-        // user has authenticated, do normal route processing
-        // user is available via req.user
-    });
+    cd example/vue
+    npm run build
+
+Start the **Node.js backend** and watch for changes on default port **3010**
+
+    cd ..    
+    pm2 start ecosystem.config.js --env env
+

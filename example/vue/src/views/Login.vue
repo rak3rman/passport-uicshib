@@ -34,7 +34,7 @@
         </form>
         <div class="border-t border-gray-200 mt-6">
           <p class="mt-2 text-xs text-gray-600">
-            Shibalike is NOT a secure authentication service and should be used for development purposes only. If you are an end user and see this page, please report immediately to <a href="https://coe.helpdesk.uic.edu/">https://coe.helpdesk.uic.edu/</a> and submit a new ticket.
+            Shibalike is NOT a secure authentication service and should be used for development purposes only. If you are an end user and see this page, please report immediately to your system administrator.
           </p>
         </div>
       </div>

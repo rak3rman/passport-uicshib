@@ -34,8 +34,12 @@ let passLocal = require('passport-local');  // Passport local auth strategy
 // this is necessary as the passport-saml library requires
 // this when we create the Strategy
 let domain = process.env.DOMAIN;
-if (!domain || domain.length == 0)
+if (!domain || domain.length === 0)
     throw new Error('You must specify the domain name of this server via the DOMAIN environment variable!');
+
+let appSecret = process.env.SECRET;
+if (!appSecret || appSecret.length === 0)
+    throw new Error('You must specify an application secret for this server via the SECRET environment variable!');
 
 let shibalike = process.env.SHIBALIKE || false;
 let httpPort = process.env.HTTPPORT || 80;
@@ -65,7 +69,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({type: 'application/json'}));
 app.use(cookieParser());
 app.use(session({
-    secret: process.env.SECRET,
+    secret: appSecret,
     cookie: {secret: true}
 }));
 app.use(express.static(publicRoot))
@@ -137,6 +141,9 @@ passport.deserializeUser(function(user, done){
 //
 if (shibalike) {
     // Shibalike authentication routes
+    app.get(loginUrl, (req, res, next) => {
+        res.sendFile("index.html", { root: publicRoot });
+    })
     app.post(loginUrl, (req, res, next) => {
         passport.authenticate("local", (err, user, info) => {
             if (err) return next(err);
@@ -146,10 +153,6 @@ if (shibalike) {
             });
         })(req, res, next);
     });
-    // Provide user details route
-    app.get(userUrl, uicshib.ensureAuth(), (req, res) => {
-        res.send({ user: req.user });
-    })
 } else {
     // UIC Shibboleth authentication routes
     app.get(loginUrl, passport.authenticate(uicshibStrategy.name), uicshib.backToUrl());
@@ -168,9 +171,14 @@ app.get(logoutUrl, (req, res) => {
 // application routes
 //
 
-// root resource
-app.get("/login", (req, res, next) => {
+// Dashboard route
+app.get("/", uicshib.ensureAuth(), (req, res, next) => {
     res.sendFile("index.html", { root: publicRoot });
+})
+
+// User details route
+app.get(userUrl, uicshib.ensureAuth(), (req, res) => {
+    res.send({ user: req.user });
 })
 
 // general error handler
