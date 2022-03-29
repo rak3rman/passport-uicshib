@@ -1,19 +1,21 @@
 Passport-UICShib
 ===============
 
-> Project is in active development where the master branch may be unstable. Head over to Releases in Github or use npm to snag a stable copy of passport-uicshib. Thanks!
-
 Forked from [passport-uwshib](https://github.com/drstearns/passport-uwshib) by Dave Stearns
 
 Passport authentication strategy that works with the University of Illinois Chicago's Shibboleth single-sign on service. This uses the fabulous [passport-saml](https://github.com/bergie/passport-saml) module for all the heavy lifting, but sets all the default options so that it works properly with the UIC Shibboleth Identity Provider (IdP).
 
-Note that in order to use the UIC IdP for authentication, **you must [register your server](https://itrust.illinois.edu/federationregistry) with the UI I-Trust Federation Registry as a Service Provider**. During the registration process, under Advanced SAML 2 Registration, this package only requires the `Assertion Consuming Service (Post)` attribute to be defined as `https://test.uic.edu/login/callback`, with respect to your subdomain.
+Note that in order to use the UIC IdP for authentication, **you must [register your server](https://itrust.illinois.edu/federationregistry) with the UI I-Trust Federation Registry as a Service Provider**. During the registration process, under Advanced SAML 2 Registration, this package only requires the `Assertion Consuming Service (Post)` attribute to be defined as `https://test.uic.edu/api/login/callback`, with respect to your subdomain.
 
 While registering, you must also specify which user profile attributes you want. See [https://shibtest.uic.edu/test](https://shibtest.uic.edu/test/) for all available profile attributes (you must be logged in). All possible attributes are included with the library, so whatever attributes are passed from Identity Provider will be accessible through the req.user object.
 
 ## Installation
 
     npm install passport-uicshib
+
+## Walkthrough
+
+Watch a detailed [Passport-UICShib Walkthrough](https://youtu.be/8nU7EO5PidQ) on YouTube. Covers the entire `README.md`, `/example/server.js` example project, `index.js` package file, as well as a demo of the Vite frontend.
 
 ## Usage
 
