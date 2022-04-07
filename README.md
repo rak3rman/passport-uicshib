@@ -15,25 +15,25 @@ While registering, you must also specify which user profile attributes you want.
 
 ## Walkthrough
 
-Watch a detailed [Passport-UICShib Walkthrough](https://youtu.be/8nU7EO5PidQ) on YouTube. Covers the entire `README.md`, `/example/server.js` example project, `index.js` package file, as well as a demo of the Vite frontend.
+Watch a detailed [Passport-UICShib Walkthrough](https://youtu.be/8nU7EO5PidQ) on YouTube. Covers the entire `README.md`, `/vite-example/server.js` vite-example project, `index.js` package file, as well as a demo of the Vite frontend.
 
 ## Usage
 
-There is a fully-working example server script in [/example/server.js](https://github.com/rak3rman/passport-uicshib/blob/master/example/server.js), and an associated [package.json](ttps://github.com/rak3rman/passport-uicshib/blob/master/example/package.json), which you can use to install all the necessary packages to make the example script run (express, express middleware, passport, etc.).
-If you are starting a new project and like how the `/example` folder is organized, feel free to copy that directory and plop it into your repository.
+There is a fully-working vite-example server script in [/vite-example/server.js](https://github.com/rak3rman/passport-uicshib/blob/master/vite-example/server.js), and an associated [package.json](ttps://github.com/rak3rman/passport-uicshib/blob/master/vite-example/package.json), which you can use to install all the necessary packages to make the vite-example script run (express, express middleware, passport, etc.).
+If you are starting a new project and like how the `/vite-example` folder is organized, feel free to copy that directory and plop it into your repository.
 
-This module provides a Strategy for the [Passport](http://passportjs.org/) framework, which is typically used with [Express](http://expressjs.com/). Thus, there are several modules you need to require in your server script in addition to this module. All of these recommended modules are included with the example script.
+This module provides a Strategy for the [Passport](http://passportjs.org/) framework, which is typically used with [Express](http://expressjs.com/). Thus, there are several modules you need to require in your server script in addition to this module. All of these recommended modules are included with the vite-example script.
 
 ### Command line
 
-The example script then gets the server's domain name and application secret from an environment variable. This allows you to run the example script without modification. Simply export a value for `DOMAIN` and `SECRET` and run the script. You can also override the default SHIBALIKE, HTTP, and HTTPS configurations if you wish by specifying `SHIBALIKE`, `HTTPPORT` and/or `HTTPSPORT` environment variables.
+The vite-example script then gets the server's domain name and application secret from an environment variable. This allows you to run the vite-example script without modification. Simply export a value for `DOMAIN` and `SECRET` and run the script. You can also override the default SHIBALIKE, HTTP, and HTTPS configurations if you wish by specifying `SHIBALIKE`, `HTTPPORT` and/or `HTTPSPORT` environment variables.
 
     export DOMAIN=test.uic.edu SECRET=CHANGE_TO_RANDOM_STRING
     node server.js
 
 ### PM2
 
-The example script is also ready to go with **pm2**. Modify the values defined in `/example/ecosystem.config.js` and pm2 will use them automatically on startup. By default, pm2 will watch for file changes and restart the application if needed.
+The vite-example script is also ready to go with **pm2**. Modify the values defined in `/vite-example/ecosystem.config.js` and pm2 will use them automatically on startup. By default, pm2 will watch for file changes and restart the application if needed.
 
     {
         name: "passport-uicshib",
@@ -53,11 +53,11 @@ Once the env variables are set to your liking, start the pm2 process using:
 
     pm2 start ecosystem.config.js --env env
 
-If you change the configuration in `/example/ecosystem.config.js`, you must delete the process using `pm2 delete passport-uicshib` and start it again using the command above.
+If you change the configuration in `/vite-example/ecosystem.config.js`, you must delete the process using `pm2 delete passport-uicshib` and start it again using the command above.
 
 ### Routes
 
-The following routes are provided by default in `example/server.js`. 
+The following routes are provided by default in `vite-example/server.js`. 
 Adjust these as needed to conform with your UI I-Trust Service Provider configuration.
 Routes are used on the backend only with both Shibalike and the Shibboleth SSO.
 
@@ -71,10 +71,10 @@ Routes are used on the backend only with both Shibalike and the Shibboleth SSO.
 
 Trying to authenticate through the Shibboleth SSO on your local machine is extremely difficult and impractical.
 Shibalike imitates the Shibboleth SSO using passport-local and dummy metadata passed along into the user object.
-You can choose to enable Shibalike in the env configuration, and the example script will flip all settings to act like Shibboleth.
+You can choose to enable Shibalike in the env configuration, and the vite-example script will flip all settings to act like Shibboleth.
 Once the dummy user is authenticated, the application should act exactly as if the user was authenticated through Shibboleth.
 
-**A couple important notes in `example/server.js`**
+**A couple important notes in `vite-example/server.js`**
 
 - Activated if the env variable in command line or pm2 is `SHIBALIKE=true`
 - Uses passport-local with a modified object of user attributes
@@ -90,7 +90,7 @@ If a user tries to access a secured route, they will be redirected to `/login` t
 Once the user is authenticated on Shibboleth's end, they will be redirected to `/login/callback` along with the user metadata.
 Now the user is authenticated as far as the application is aware. This method will only work on production servers that are registered with the UI I-Trust Federation Registry as a Service Provider.
 
-**A couple important notes in `example/server.js`**
+**A couple important notes in `vite-example/server.js`**
 
 - Activated if the env variable in command line or pm2 is `SHIBALIKE=false` (is default)
 - Leverages passport-saml and passport-uicshib
@@ -106,13 +106,13 @@ Now the user is authenticated as far as the application is aware. This method wi
 
 A sample Vue.js project is provided to help users authenticate with Shibalike.
 This frontend was based on the [Vite + Vue 3 + Tailwinds CSS Starter Template](https://github.com/web2033/vite-vue3-tailwind-starter).
-In the `example` folder, the Vite project is ready-to-go in both a development sense using `npm run dev` and compiled for production using `npm run build`.
+In the `vite-example` folder, the Vite project is ready-to-go in both a development sense using `npm run dev` and compiled for production using `npm run build`.
 
 ### Development
 
 Start the **Node.js backend** and watch for changes on default port **3010**
 
-    cd example    
+    cd vite-example    
     pm2 start ecosystem.config.js --env env
 
 Start the **Vue.js frontend** and watch for changes on default port **3000**
@@ -122,9 +122,9 @@ Start the **Vue.js frontend** and watch for changes on default port **3000**
 
 ### Production
 
-Build the **Vue.js frontend** into the `example/vue/dist` folder
+Build the **Vue.js frontend** into the `vite-example/vue/dist` folder
 
-    cd example/vue
+    cd vite-example/vue
     npm run build
 
 Start the **Node.js backend** and watch for changes on default port **3010**

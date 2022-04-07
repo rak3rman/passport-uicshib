@@ -126,7 +126,7 @@ if (shibalike) {
 // to session state and reconstitute the user on the
 // next request. Normally, you'd save only the netID
 // and read the full user profile from your database
-// during deserializeUser, but for this example, we
+// during deserializeUser, but for this vite-example, we
 // will save the entire user just to keep it simple
 passport.serializeUser(function(user, done){
     done(null, user);
@@ -171,7 +171,7 @@ app.get(logoutUrl, (req, res) => {
 // application routes
 //
 
-// Dashboard route
+// Login route
 app.get("/login", (req, res, next) => {
     res.sendFile("index.html", { root: publicRoot });
 })
