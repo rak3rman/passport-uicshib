@@ -9,9 +9,9 @@
 */
 
 const preAuthUrl = ''; // appended to beginning of authentication routes, optional, ex: '/shibboleth'
-const loginUrl = '/api/login'; // where we will redirect if the user is not logged in
+const loginUrl = '/login'; // where we will redirect if the user is not logged in
 const loginCallbackUrl = '/api/login/callback'; // where shibboleth should redirect upon successful auth
-const logoutUrl = '/api/logout'; // url endpoint that will log a user out
+const logoutUrl = '/logout'; // url endpoint that will log a user out
 const userUrl = '/api/user'; // url endpoint that will return user details
 
 let http = require('http');                     // http server
@@ -41,7 +41,7 @@ let appSecret = process.env.SECRET;
 if (!appSecret || appSecret.length === 0)
     throw new Error('You must specify an application secret for this server via the SECRET environment variable!');
 
-let shibalike = process.env.SHIBALIKE === "true" || false;
+let shibalike = process.env.SHIBALIKE === "true";
 let httpPort = process.env.HTTPPORT || 80;
 let httpsPort = process.env.HTTPSPORT || 443;
 
@@ -141,9 +141,9 @@ passport.deserializeUser(function(user, done){
 //
 if (shibalike) {
     // Shibalike authentication routes
-    // app.get(loginUrl, (req, res, next) => {
-    //     res.sendFile("index.html", { root: publicRoot });
-    // })
+    app.get(loginUrl, (req, res, next) => {
+        res.sendFile("index.html", { root: publicRoot });
+    })
     app.post(loginUrl, (req, res, next) => {
         passport.authenticate("local", (err, user, info) => {
             if (err) return next(err);
@@ -162,19 +162,15 @@ if (shibalike) {
 
 // Universal logout route
 app.get(logoutUrl, (req, res) => {
-    req.logout();
-    console.log("Logged out");
-    return res.redirect("/login");
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('/login');
+    });
 });
 
 ///////////////////////////////////////////////////////////////////////////////
 // application routes
 //
-
-// Login route
-app.get("/login", (req, res, next) => {
-    res.sendFile("index.html", { root: publicRoot });
-})
 
 // User details route
 app.get(userUrl, uicshib.ensureAuth(), (req, res) => {

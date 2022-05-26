@@ -66,7 +66,7 @@ export default {
         email: email,
         password: password
       }
-      axios.post('/api/login', data)
+      axios.post('/login', data)
           .then((response) => {
             console.log('Logged in')
             window.location.href = '/'
