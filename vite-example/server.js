@@ -41,7 +41,7 @@ let appSecret = process.env.SECRET;
 if (!appSecret || appSecret.length === 0)
     throw new Error('You must specify an application secret for this server via the SECRET environment variable!');
 
-let shibalike = process.env.SHIBALIKE || false;
+let shibalike = process.env.SHIBALIKE === "true" || false;
 let httpPort = process.env.HTTPPORT || 80;
 let httpsPort = process.env.HTTPSPORT || 443;
 
