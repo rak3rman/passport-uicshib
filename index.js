@@ -226,7 +226,7 @@ module.exports.ensureAuth = function() {
 module.exports.backToUrl = function(defaultUrl) {
     return function(req, res) {
         let url = defaultUrl || '/';
-        if (req.session) {
+        if (req.session && req.session.authRedirectUrl) {
             url = req.session.authRedirectUrl;
             delete req.session.authRedirectUrl;
         }
