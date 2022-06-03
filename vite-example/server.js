@@ -24,7 +24,7 @@ let cookieParser = require('cookie-parser');    // cookie parsing middleware
 let session = require('express-session');       // express session management
 let passport = require('passport');             // authentication middleware
 let uicshib = require('passport-uicshib');      // UIC Shibboleth auth strategy
-let passLocal = require('passport-local');  // Passport local auth strategy
+let passLocal = require('passport-local');      // Passport local auth strategy
 
 ///////////////////////////////////////////////////////////////////////////////
 // load files and read environment variables

@@ -186,7 +186,12 @@ module.exports.ensureAuth = function() {
         if (req.isAuthenticated()) {
             return next();
         } else {
-            res.status(401).send('You are not authenticated');
+            if (req.session) {
+                req.session.authRedirectUrl = req.originalUrl;
+            } else {
+                console.warn('passport-uicshib: No session property on request! Is your session store unreachable?');
+            }
+            res.redirect('/login');
         }
     };
 };
