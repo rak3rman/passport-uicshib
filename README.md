@@ -28,12 +28,12 @@ This module provides a Strategy for the [Passport](http://passportjs.org/) frame
 
 The vite-example script then gets the server's domain name and application secret from an environment variable. This allows you to run the vite-example script without modification. Simply export a value for `DOMAIN` and `SECRET` and run the script. You can also override the default SHIBALIKE, HTTP, and HTTPS configurations if you wish by specifying `SHIBALIKE`, `HTTPPORT` and/or `HTTPSPORT` environment variables.
 
-    export DOMAIN=test.uic.edu SECRET=CHANGE_TO_RANDOM_STRING
-    node server.js
+    npm i
+    DOMAIN=test.uic.edu SECRET=CHANGE_TO_RANDOM_STRING node server.js
 
 ### PM2
 
-The vite-example script is also ready to go with **pm2**. Modify the values defined in `/vite-example/ecosystem.config.js` and pm2 will use them automatically on startup. By default, pm2 will watch for file changes and restart the application if needed.
+The vite-example backend is also ready to go with **pm2**. Modify the values defined in `/vite-example/ecosystem.config.js` and pm2 will use them automatically on startup. By default, pm2 will watch for file changes and restart the application if needed.
 
     {
         name: "passport-uicshib",
@@ -54,6 +54,12 @@ Once the env variables are set to your liking, start the pm2 process using:
     pm2 start ecosystem.config.js --env env
 
 If you change the configuration in `/vite-example/ecosystem.config.js`, you must delete the process using `pm2 delete passport-uicshib` and start it again using the command above.
+
+### Nodemon
+
+Alternatively, you can run the vite-example backend using nodemon if it is installed in your development environment.
+
+    DOMAIN=test.uic.edu SHIBALIKE=false SECRET=CHANGE_TO_RANDOM_STRING HTTPPORT=3010 HTTPSPORT=3011 nodemon server.js --ignore node_modules/ --ignore vue/
 
 ### Routes
 
